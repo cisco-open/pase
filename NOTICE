@@ -1,0 +1,61 @@
+NOTICE
+
+This software contains code from several third-party open source projects. 
+The following is a list of all third-party components and their respective licenses:
+
+================================================================================
+
+1. Microsoft WavLM
+   License: MIT License
+   Copyright: Copyright (c) 2021 Microsoft
+   Source: https://github.com/microsoft/unilm/tree/master/wavlm
+   Files: models/wavlm/modules.py, models/wavlm/WavLM.py
+   License file: licenses/LICENSE_wavlm
+
+2. NXAI xLSTM Scheduler  
+   License: Apache License, Version 2.0
+   Copyright: Copyright (c) NXAI GmbH and its affiliates 2024
+   Source: https://github.com/NX-AI/xlstm
+   Files: utils/scheduler.py
+   License file: licenses/LICENSE_xlstm
+
+3. WavTokenizer Components
+   License: MIT License
+   Copyright: Copyright (c) 2024/2025 jishengpeng
+   Source: https://github.com/jishengpeng/WavTokenizer
+   Files: models/vocoder/vocos/backbone.py, models/vocoder/vocos/conv.py, models/vocoder/vocos/head.py
+   License file: licenses/LICENSE_wavtokenizer
+
+4. SEtrain Vocoder Training Scripts
+   License: MIT License
+   Copyright: Copyright (c) 2025 Xiaobin-Rong
+   Source: https://github.com/Xiaobin-Rong/SEtrain
+   Files: train/train_vocoder.py, train/train_vocoder_dual.py, train/train_wavlm.py
+   License file: licenses/LICENSE_setrain
+
+5. DeepLearning Utility Scripts
+   License: MIT License
+   Copyright: Copyright (c) 2022 KKKSQJ
+   Source: https://github.com/KKKSQJ/DeepLearning
+   Files: utils/distributed_utils.py
+   License file: licenses/LICENSE_deeplearning
+
+6. Urgent Challenge Utilities
+   License: Apache License, Version 2.0
+   Copyright: Copyright (c) 2024 urgent-challenge
+   Source: https://github.com/urgent-challenge/urgent2025_challenge
+   Files: utils/simulate_utils.py
+   License file: licenses/LICENSE_urgent
+
+7. NVIDIA BigVGAN Discriminators
+   License: MIT License
+   Copyright: Copyright (c) 2024 NVIDIA CORPORATION
+   Source: https://github.com/NVIDIA/BigVGAN/blob/main/discriminators.py
+   Files: models/vocoder/discriminators.py
+   License file: licenses/LICENSE_bigvgan
+
+================================================================================
+
+All third-party licenses are included in the licenses/ directory.
+
+Original work by Cisco Systems, Inc. and its affiliates is licensed under the Apache License, Version 2.0.

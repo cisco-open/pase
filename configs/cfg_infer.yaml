@@ -1,0 +1,10 @@
+test_dataset: 
+  noisy_dir: /work/user_data/xiaobin/Datasets/LibriTTS/libritts_test/noisy
+  clean_dir: /work/user_data/xiaobin/Datasets/LibriTTS/libritts_test/clean
+
+network:
+  exp_path: /work/user_data/xiaobin/Experiments/exp_PASE/exp_vocoder_L24_2025-10-18-10h06m
+  config: ${network.exp_path}/config.yaml
+  ckpt_name: model_400
+  checkpoint: ${network.exp_path}/checkpoints/${network.ckpt_name}.tar
+  enh_folder: ${network.exp_path}/${network.ckpt_name}/enhanced_libritts_test

@@ -1,0 +1,15 @@
+librosa==0.10.2.post1
+nnAudio==0.3.3
+numpy==1.23.5
+omegaconf==2.3.0
+pandas==2.3.3
+ptflops==0.7.4
+PySoundFile==0.9.0.post1
+scipy==1.10.1
+soundfile==0.13.1
+toml==0.10.2
+torch==2.4.1
+torch==2.1.1
+torchaudio==2.4.1
+torchaudio==2.1.1
+tqdm==4.67.1

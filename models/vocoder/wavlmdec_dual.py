@@ -1,0 +1,84 @@
+# Copyright 2025 Cisco Systems, Inc. and its affiliates
+# Apache-2.0
+
+import torch
+from torch import nn
+from omegaconf import OmegaConf
+from .vocos.backbone import VocosBackbone as Decoder
+from .vocos.head import ISTFTHead as Head
+
+
+class WavLMDec(nn.Module):
+    def __init__(
+        self,
+        input_channels=1024,
+        dim=768,
+        intermediate_dim=2304,
+        num_layers=12,
+        n_fft=1280,
+        hop_length=320
+    ):
+        super().__init__()
+        self.decoder = Decoder(
+            input_channels=input_channels,
+            dim=dim,
+            intermediate_dim=intermediate_dim,
+            num_layers=num_layers
+        )
+        self.head = Head(
+            dim=dim,
+            n_fft=n_fft,
+            hop_length=hop_length
+        )
+        self.proj = nn.Linear(1024, 1024)
+        
+    @classmethod
+    def from_pretrained(cls, cfg_yaml, model_ckpt):
+        if isinstance(cfg_yaml, str):
+            cfg = OmegaConf.load(cfg_yaml)
+        model = cls(**cfg['decoder_config'])
+        print("Loading Vocoder from", model_ckpt)
+        state_dict = torch.load(model_ckpt, map_location='cpu', weights_only=True)['generator']
+        model.load_state_dict(state_dict, strict=False)
+        model = model.eval()
+        
+        for p in model.parameters():
+            p.requires_grad = False
+        
+        return model
+        
+    
+    def forward(
+        self,
+        embed_p,
+        embed_a
+    ):
+        """embed_p: (B, T, D), embed_a: (B, T, D)"""
+        embed_a = self.proj(embed_a)  # (B, T, D)
+        
+        embed = embed_p + embed_a
+        
+        x = embed.transpose(1, 2)  # (B, D, T)
+        
+        x = self.decoder(x)
+        
+        audio_output = self.head(x)
+
+        return audio_output
+    
+
+if __name__ == "__main__":
+    
+    config = OmegaConf.load('configs/cfg_train_vocoder.yaml')
+
+    wavlmdec = WavLMDec(**config['decoder_config'])
+    
+    x_p = torch.randn(1, 1024, 50)
+    x_a = torch.randn(1, 1024, 50)
+    out = wavlmdec(x_p, x_a)
+    print(out.shape)
+
+    # from ptflops import get_model_complexity_info
+    # macs, params = get_model_complexity_info(wavlmdec, (1024, 50), as_strings=True,
+    #                                         print_per_layer_stat=False, verbose=False)
+    # print(f"MACs: {macs}, Params: {params}")
