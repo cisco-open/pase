@@ -1,10 +1,13 @@
 # PASE: Phonologically Anchored Speech Enhancer
-PASE presents a state-of-the-art generative model for speech enhancement, with its notably low hallucination being a key advantage.
+[![arxiv](https://img.shields.io/badge/arXiv-Paper-b31b1b.svg?logo=arXiv)](https://arxiv.org/abs/2511.13300)
+[![demo](https://img.shields.io/badge/GitHub-Demo-orange.svg)](https://xiaobin-rong.github.io/pase_demo/)
+<!-- [![models](https://img.shields.io/badge/🤗-Models-yellow)]() -->
 
-[![arxiv]()]()
-[![demo]()]()
-[![models]()]()
+🎉 This is the official implementation of our AAAI 2026 paper: 
 
+[PASE: Leveraging the Phonological Prior of WavLM for Low-Hallucination Generative Speech Enhancement](https://arxiv.org/abs/2511.13300).
+
+🔥 The pre-trained checkpoints will be released soon.
 
 ## Inference
 To run inference on audio files, use:
@@ -56,5 +59,18 @@ This step trains the final dual-stream vocoder, which takes the acoustic (1st-la
 ## Citation
 If you find this work useful, please cite our paper:
 ```bibtex
-
+@misc{rong2025pase,
+      title={PASE: Leveraging the Phonological Prior of WavLM for Low-Hallucination Generative Speech Enhancement}, 
+      author={Xiaobin Rong and Qinwen Hu and Mansur Yesilbursa and Kamil Wojcicki and Jing Lu},
+      year={2025},
+      eprint={2511.13300},
+      archivePrefix={arXiv},
+      primaryClass={eess.AS},
+      url={https://arxiv.org/abs/2511.13300}, 
+}
 ```
+
+## Contact
+Xiaobin Rong: [xiaobin.rong@smail.nju.edu.cn](mailto:xiaobin.rong@smail.nju.edu.cn)
+
+Mansur Yesilbursa: [myesilbu@cisco.com](myesilbu@cisco.com)
