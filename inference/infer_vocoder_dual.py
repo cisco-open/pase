@@ -8,7 +8,7 @@ import soundfile as sf
 from tqdm import tqdm
 from librosa.util import find_files
 from omegaconf import OmegaConf
-from models.wavlm.feature_extractor import WavLM_feat
+from models.wavlm.feature_extractor import WavLM_feat as Encoder
 from models.vocoder.wavlmdec_dual import WavLMDec as Model
 
 
@@ -17,21 +17,25 @@ def infer(args):
     cfg_infer = OmegaConf.load(args.config)
     cfg_network = OmegaConf.load(cfg_infer.network.config)
     
-    wav_folder = cfg_infer.test_dataset.clean_dir
+    noisy_folder = cfg_infer.test_dataset.noisy_dir
+    clean_folder = cfg_infer.test_dataset.clean_dir
     save_folder = cfg_infer.network.enh_folder
     os.makedirs(save_folder, exist_ok=True)
     
+    ext = cfg_infer.test_dataset.extension
+    
+    wavs = sorted(find_files(noisy_folder, ext=ext))
+    print(f"Inference on folder: {noisy_folder}, {len(wavs)} files")
+    
     device = torch.device(f'cuda:{args.device}' if torch.cuda.is_available() else 'cpu')
 
-    encoder = WavLM_feat(**cfg_network['encoder_config']).to(device).eval()
-    model = Model(**cfg_network['decoder_config']).to(device).eval()
+    encoder = Encoder(**cfg_network['encoder_config']).to(device)
+    model = Model(**cfg_network['vocoder_config']).to(device).eval()
     
     model.load_state_dict(
         torch.load(cfg_infer['network']['checkpoint'], map_location=device)['generator']
     )
-    
-    wavs = sorted(find_files(wav_folder, ext='wav'))
-    print(f"Inference on folder: {wav_folder}, {len(wavs)} files")
+
 
     inf_scp_list = []
     ref_scp_list = []
@@ -52,10 +56,11 @@ def infer(args):
         else:
             esti_wav = esti_wav[..., :true_wav.shape[-1]]
         
-        uid = os.path.basename(wav_path).split('.wav')[0]
-        true_path = os.path.join(wav_folder, f'{uid}.wav')
-        esti_path = os.path.join(save_folder, f'{uid}_esti.wav')
+        uid = os.path.basename(wav_path).split(f'.{ext}')[0]
         
+        true_path = os.path.join(clean_folder, f'{uid}.{ext}')
+        esti_path = os.path.join(save_folder, f'{uid}.{ext}')
+    
         sf.write(esti_path, esti_wav, fs)
         
         inf_scp_list.append([uid, esti_path])

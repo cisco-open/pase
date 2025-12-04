@@ -8,11 +8,8 @@ from tqdm import tqdm
 
 from models.pase import PASE
 
-wavlm_ckpt_path = '/work/project_data/disentangled_representations/shared_ckpt/pase/DeWavLM_ep200.tar'
-vocoder_cfg_path = '/work/project_data/disentangled_representations/shared_ckpt/pase/cfg_train_vocoder_dual.yaml'
-vocoder_ckpt_path = '/work/project_data/disentangled_representations/shared_ckpt/pase/vocoder_add_ep400.tar'
-
-
+wavlm_ckpt_path = '/work/user_data/xiaobin/Pre-trained/PASE/DeWavLM.tar'
+vocoder_ckpt_path = '/work/user_data/xiaobin/Pre-trained/PASE/Vocoder_dual.tar'
 
 
 def inference_file(input_file, output_file, model):
@@ -67,7 +64,6 @@ if __name__ == "__main__":
     model = PASE(
         wavlm_ckpt_path=wavlm_ckpt_path,
         wavlm_output_layer=[1, 24],
-        vocoder_cfg_path=vocoder_cfg_path,
         vocoder_ckpt_path=vocoder_ckpt_path,
     ).to(device).eval()
 

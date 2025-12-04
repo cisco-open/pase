@@ -22,17 +22,19 @@ def infer(args):
     save_folder = cfg_infer.network.enh_folder
     os.makedirs(save_folder, exist_ok=True)
     
+    ext = cfg_infer.test_dataset.extension
+    
+    wavs = sorted(find_files(noisy_folder, ext=ext))
+    print(f"Inference on folder: {noisy_folder}, {len(wavs)} files")
+    
     device = torch.device(f'cuda:{args.device}' if torch.cuda.is_available() else 'cpu')
 
-    encoder = Encoder(**cfg_network['student_config']).to(device).eval()
+    encoder = Encoder(**cfg_network['student_config']).to(device)
     
     checkpoint = torch.load(cfg_infer.network.checkpoint, map_location=device)
     encoder.wavlm.load_state_dict(checkpoint['model'])
 
-    vocoder = Vocoder.from_pretrained(**cfg_network['vocoder_config']).to(device).eval()
-    
-    wavs = sorted(find_files(noisy_folder, ext='wav'))
-    print(f"Inference on folder: {noisy_folder}, {len(wavs)} files")
+    vocoder = Vocoder.from_pretrained(**cfg_network['vocoder_config']).to(device)
 
     inf_scp_list = []
     ref_scp_list = []
@@ -53,10 +55,10 @@ def infer(args):
         else:
             esti_wav = esti_wav[..., :true_wav.shape[-1]]
         
-        uid = os.path.basename(wav_path).split('.wav')[0]
+        uid = os.path.basename(wav_path).split(f'.{ext}')[0]
         
-        true_path = os.path.join(clean_folder, f'{uid}.wav')
-        esti_path = os.path.join(save_folder, f'{uid}_esti.wav')
+        true_path = os.path.join(clean_folder, f'{uid}.{ext}')
+        esti_path = os.path.join(save_folder, f'{uid}.{ext}')
     
         sf.write(esti_path, esti_wav, fs)
         

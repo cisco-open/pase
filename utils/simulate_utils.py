@@ -5,6 +5,7 @@
 
 import ast
 import re
+import os
 import subprocess
 from copy import deepcopy
 from functools import partial
@@ -297,7 +298,12 @@ def wind_noise(
     noise = scale * noise_sample
 
     # to use ffmpeg for simulation, speech and noise have to be saved once
-    tmp_dir = Path(f"{OUTPUT_DIR}/simulation_tmp")
+    worker_info = torch.utils.data.get_worker_info()
+    if worker_info is not None:
+        worker_id = worker_info.id
+    else:
+        worker_id = 0
+    tmp_dir = Path(f"{OUTPUT_DIR}/simulation_tmp/{worker_id}")
     tmp_dir.mkdir(exist_ok=True)
     speech_tmp_path = tmp_dir / f"speech_{uid}.wav"
     noise_tmp_path = tmp_dir / f"noise_{uid}.wav"
@@ -340,6 +346,10 @@ def wind_noise(
         mix = np.maximum(clipping_threshold * np.min(mix) * np.ones_like(mix), mix)
         mix = np.minimum(clipping_threshold * np.max(mix) * np.ones_like(mix), mix)
 
+    os.remove(speech_tmp_path)
+    os.remove(noise_tmp_path)
+    os.remove(mix_tmp_path)
+    
     return mix[None], noise[None]
 
 
@@ -526,30 +536,6 @@ def packet_loss(
         speech_sample[:, start:end] = 0
 
     return speech_sample
-
-
-
-def get_pl_target(noisy_speech, speech_sample, delta_SNR=5.0, K=4):
-    """Generate PL target.
-
-    This function generates the PL target based on the given noisy speech and clean speech samples.
-    The resulting `noisy_speech` has a shape of [K+2, wav_len], where `K` is the number of intermediate targets in PL.
-    Each row of `noisy_speech` corresponds to the noisy signal, signals with increasing SNR by delta_SNR, and the clean speech signal, respectively.
-
-    Args:
-        noisy_speech (ndarray): The noisy speech signal.
-        speech_sample (ndarray): The clean speech signal.
-        delta_SNR (float, optional): The increment in SNR (Signal-to-Noise Ratio) for each intermediate target. Defaults to 5.0.
-        K (int, optional): The number of intermediate targets in PL. Defaults to 4.
-    Returns:
-        ndarray: The PL target with shape [K+2, wav_len].
-    """
-    noise_sample = noisy_speech - speech_sample
-    snr_values = np.arange(0, (K+1) * delta_SNR, delta_SNR)
-    scales = np.concatenate((10 ** (-snr_values / 20), [0]))
-    noise_sample = scales[:, np.newaxis] * noise_sample
-    noisy_speech = speech_sample + noise_sample
-    return noisy_speech
 
 
 #############################

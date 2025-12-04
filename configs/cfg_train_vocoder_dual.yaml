@@ -1,8 +1,8 @@
 encoder_config:
-  wavlm_ckpt_path: /work/user_data/xiaobin/Pre-trained/PASE/DeWavLM_ep200.tar
+  wavlm_ckpt_path: /work/user_data/xiaobin/Pre-trained/PASE/DeWavLM.tar
   output_layer: [1, 24]
 
-decoder_config:
+vocoder_config:
   input_channels: 1024
   dim: 768
   intermediate_dim: 2304

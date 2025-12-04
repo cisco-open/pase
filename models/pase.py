@@ -4,27 +4,20 @@
 import torch
 import torch.nn as nn
 from typing import Union, List
-from wavlm.feature_extractor import WavLM_feat as Encoder
-from vocoder.wavlmdec_dual import WavLMDec as Decoder
+from .wavlm.feature_extractor import WavLM_feat as Encoder
+from .vocoder.wavlmdec_dual import WavLMDec as Decoder
 
 
 class PASE(nn.Module):
     def __init__(
         self, 
-        wavlm_ckpt_path="/work/user_data/xiaobin/Pre-trained/PASE/DeWavLM_ep200.tar",
+        wavlm_ckpt_path="/work/user_data/xiaobin/Pre-trained/PASE/DeWavLM.tar",
         wavlm_output_layer: Union[int, List[int]] = [1,24],
-        vocoder_cfg_path="/work/user_data/xiaobin/Pre-trained/PASE/cfg_train_vocoder.yaml",
-        vocoder_ckpt_path="/work/user_data/xiaobin/Pre-trained/PASE/vocoder_add_ep400.tar",
+        vocoder_ckpt_path="/work/user_data/xiaobin/Pre-trained/PASE/Vocoder_L24.tar",
     ):
         super().__init__()
-        self.encoder = Encoder(
-            wavlm_ckpt_path=wavlm_ckpt_path,
-            output_layer=wavlm_output_layer
-        )
-        self.decoder = Decoder.from_pretrained(
-            cfg_yaml=vocoder_cfg_path,
-            model_ckpt=vocoder_ckpt_path
-        )
+        self.encoder = Encoder(wavlm_ckpt_path, wavlm_output_layer)
+        self.decoder = Decoder.from_pretrained(vocoder_ckpt_path)
 
     @torch.no_grad()
     def forward(self, x):

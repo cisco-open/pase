@@ -1,10 +1,11 @@
 test_dataset: 
   noisy_dir: /work/user_data/xiaobin/Datasets/LibriTTS/libritts_test/noisy
   clean_dir: /work/user_data/xiaobin/Datasets/LibriTTS/libritts_test/clean
+  extension: wav
 
 network:
-  exp_path: /work/user_data/xiaobin/Experiments/exp_PASE/exp_vocoder_L24_2025-10-18-10h06m
+  exp_path: /work/user_data/xiaobin/Experiments/exp_PASE/exp_vocoder_L24_2025-12-04-12h28m
   config: ${network.exp_path}/config.yaml
-  ckpt_name: model_400
+  ckpt_name: model_001
   checkpoint: ${network.exp_path}/checkpoints/${network.ckpt_name}.tar
   enh_folder: ${network.exp_path}/${network.ckpt_name}/enhanced_libritts_test

@@ -13,20 +13,20 @@ class WavLM_feat(nn.Module):
         wavlm_ckpt_path="/work/user_data/xiaobin/Pre-trained/WavLM/WavLM-Large.pt",
         output_layer: Union[int, List[int]] = 24,
         load_pretrained: bool=True,
-        freeze: bool=True,
+        frozen: bool=True,
     ):
         super().__init__()
         self.wavlm_ckpt_path = wavlm_ckpt_path
         cpt = torch.load(self.wavlm_ckpt_path, map_location="cpu")
-        print("WavLM output layer:", output_layer)
+        print("[WavLM] output layer:", output_layer)
         
         self.cfg = WavLMConfig(cpt['cfg'])
         self.wavlm = WavLM(self.cfg)
         if load_pretrained:
             self.wavlm.load_state_dict(cpt['model'])
-            print("Loading WavLM from:", wavlm_ckpt_path)
+            print("[WavLM] Loading from:", wavlm_ckpt_path)
 
-        if freeze:
+        if frozen:
             self.wavlm.eval()
             for p in self.wavlm.parameters():
                 p.requires_grad = False
@@ -71,8 +71,8 @@ if __name__ == "__main__":
     # print(dir(feature_extractor.cfg)) 
     
     for k in dir(feature_extractor.cfg):
-        # if 'mask' in k:
         print(k, getattr(feature_extractor.cfg, k))
-    # x = torch.randn(1, 16000)
-    # y = feature_extractor(x)
-    # print(y.shape)
+        
+    x = torch.randn(1, 16000)
+    y = feature_extractor(x)
+    print(y.shape)

@@ -2,17 +2,16 @@ teacher_config:
   wavlm_ckpt_path: "/work/user_data/xiaobin/Pre-trained/WavLM/WavLM-Large.pt"
   output_layer: 24
   load_pretrained: True
-  freeze: True
+  frozen: True
 
 student_config:
   wavlm_ckpt_path: "/work/user_data/xiaobin/Pre-trained/WavLM/WavLM-Large.pt"
   output_layer: 24
   load_pretrained: True
-  freeze: False
+  frozen: False
 
 vocoder_config: 
-  cfg_yaml: "/work/user_data/xiaobin/Pre-trained/PASE/cfg_train_vocoder.yaml"
-  model_ckpt: "/work/user_data/xiaobin/Pre-trained/PASE/vocoder_L24_ep400.tar"
+  ckpt_path: "/work/user_data/xiaobin/Pre-trained/PASE/Vocoder_L24.tar"
 
 DDP:
   world_size: 4  # not used
