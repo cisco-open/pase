@@ -32,17 +32,17 @@ class WavLMDec(nn.Module):
         )
     
     @classmethod
-    def from_pretrained(cls, cfg_yaml, model_ckpt):
-        if isinstance(cfg_yaml, str):
-            cfg = OmegaConf.load(cfg_yaml)
-        model = cls(**cfg['decoder_config'])
-        print("Loading Vocoder from", model_ckpt)
-        state_dict = torch.load(model_ckpt, map_location='cpu')['generator']
-        model.load_state_dict(state_dict, strict=False)
-        model = model.eval()
+    def from_pretrained(cls, ckpt_path: str, frozen: bool = True):
+        print("[Vocoder] Loading from:", ckpt_path)
+        ckpt = torch.load(ckpt_path, map_location='cpu')
         
-        for p in model.parameters():
-            p.requires_grad = False
+        model = cls(**ckpt['cfg'])
+        model.load_state_dict(ckpt['model'], strict=False)
+        
+        if frozen:
+            model = model.eval()
+            for p in model.parameters():
+                p.requires_grad = False
         
         return model
         

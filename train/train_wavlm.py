@@ -21,7 +21,7 @@ from pathlib import Path
 from torch.utils.tensorboard import SummaryWriter
 from utils.distributed_utils import reduce_value
 
-from .dataloader import URGENT2Dataset as WavLMDataset
+from loaders.dataloader import URGENT2Dataset as WavLMDataset
 from models.wavlm.feature_extractor import WavLM_feat
 from models.vocoder.wavlmdec import WavLMDec
 from utils.scheduler import LinearWarmupCosineAnnealingLR as WarmupLR
@@ -67,7 +67,7 @@ def run(rank, config, args):
                                                         shuffle=False,
                                                         collate_fn=collate_fn)
     
-    vocoder = WavLMDec.from_pretrained(**config['pretrained']['vocoder_ckpt']).to(args.device).eval()
+    vocoder = WavLMDec.from_pretrained(**config['vocoder_config']).to(args.device)
 
     teacher = WavLM_feat(**config['teacher_config']).to(args.device)
     model = WavLM_feat(**config['student_config']).to(args.device)
@@ -145,8 +145,8 @@ class Trainer:
             for file in Path(__file__).parent.parent.iterdir():
                 if file.is_file():
                     shutil.copy2(file, self.code_path)
-            for dir in ['configs', 'models', 'train', 'inference', 'utils']:
-                shutil.copytree(Path(__file__).parent.parent / dir, Path(self.code_path) / dir, dirs_exist_ok=True)
+            for d in ['configs', 'loaders', 'models', 'train', 'inference', 'utils']:
+                shutil.copytree(Path(__file__).parent.parent / d, Path(self.code_path) / d, dirs_exist_ok=True)
             self.writer = SummaryWriter(self.log_path)
 
         self.start_epoch = 1
@@ -174,9 +174,6 @@ class Trainer:
             self.best_score = score
 
     def _del_checkpoint(self, epoch, score):
-        # Condition 1: epoch-1 is not a multiple of self.save_checkpoint_interval;
-        # Condition 2: current score is best score.
-        # if (epoch - 1) % self.save_checkpoint_interval != 0 or score == self.best_score:
         if (epoch - 1) % self.save_checkpoint_interval != 0:
             prev_epoch = epoch - 1
             checkpoint_file = os.path.join(self.checkpoint_path, f'model_{str(prev_epoch).zfill(3)}.tar')

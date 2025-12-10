@@ -19,7 +19,7 @@ import soundfile as sf
 from torch.utils.tensorboard import SummaryWriter
 from utils.distributed_utils import reduce_value
 
-from .dataloader import URGENT2Dataset as Dataset
+from loaders.dataloader import URGENT2Dataset as Dataset
 from models.wavlm.feature_extractor import WavLM_feat as Encoder
 from models.vocoder.wavlmdec_dual import WavLMDec as Generator
 from models.vocoder.discriminators import (
@@ -27,7 +27,7 @@ from models.vocoder.discriminators import (
     MultiBandDiscriminator,
     CombinedDiscriminator
 )
-from .loss import (
+from utils.loss import (
     feature_loss,
     generator_loss,
     discriminator_loss,
@@ -77,7 +77,7 @@ def run(rank, config, args):
                                                         collate_fn=collate_fn)
     
     encoder = Encoder(**config['encoder_config']).to(args.device)
-    generator = Generator(**config['decoder_config']).to(args.device)
+    generator = Generator(**config['vocoder_config']).to(args.device)
     
     mpd = MultiPeriodDiscriminator(**config['discriminator_config']['mpd']).to(args.device)
     mbd = MultiBandDiscriminator(**config['discriminator_config']['mbd']).to(args.device)
@@ -166,7 +166,8 @@ class Trainer:
             for file in Path(__file__).parent.parent.iterdir():
                 if file.is_file():
                     shutil.copy2(file, self.code_path)
-            shutil.copytree(Path(__file__).parent.parent / 'models', Path(self.code_path) / 'models', dirs_exist_ok=True)
+            for d in ['configs', 'loaders', 'models', 'train', 'inference', 'utils']:
+                shutil.copytree(Path(__file__).parent.parent / d, Path(self.code_path) / d, dirs_exist_ok=True)
             self.writer = SummaryWriter(self.log_path)
 
         self.start_epoch = 1

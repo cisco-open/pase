@@ -2,7 +2,7 @@ encoder_config:
   wavlm_ckpt_path: /work/user_data/xiaobin/Pre-trained/WavLM/WavLM-Large.pt
   output_layer: 24
 
-decoder_config:
+vocoder_config:
   input_channels: 1024
   dim: 768
   intermediate_dim: 2304

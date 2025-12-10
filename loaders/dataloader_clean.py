@@ -15,13 +15,18 @@ from utils import simulate_utils
 
 
 class URGENT2Dataset(data.Dataset):
-    def __init__(self,
-                 speech_csvs: List,
-                 wav_len=4, 
-                 num_per_epoch=10000, 
-                 random_start=False,
-                 default_fs = 16000,
-                 mode='train'):
+    def __init__(
+        self,
+        speech_csvs: List,
+        wav_len=4, 
+        num_per_epoch=10000, 
+        random_start=False,
+        default_fs = 16000,
+        mode='train'
+    ):
+        # The csv file comprises the following columns:
+        #   ['uid', 'sample_rate', 'filepath', 'filename', 'dnsmos_ovrl', 'dnsmos_sig', 'dnsmos_bak', 'dnsmos_p808', 'audio_length'],
+        #    'uid', 'sample_rate', and 'filepath' are required, while the others are optional.
         super().__init__()
         assert mode in ['train', 'validation']
         self.wav_len = wav_len
